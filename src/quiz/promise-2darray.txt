@@ -1,1 +1,15 @@
 Explain the code execution based on the order of the messages logged in src/quiz/promise-2darray.txt.
+
+On the main thread, the 
+'Sum called ... ' log is called when the promise is created.
+After the promise is created, 'Returning from sum' gets logged.
+The code between these calls are called asychronously and so they are on the event thread while the rest of the code is executed.
+So currently the setTimeout() is on the event thread.
+
+Next the second sum2Darray([]) is called and again the 'Sum called ... ' and 'Returning from sum' are called when the promise is created.
+
+Then when the promise that is running on the event thread is resolved or rejected, the then() and catch() blocks are called.
+In this case, the sum2Darray([]) gets rejected and immediately returned.
+Since it terminates earlier without reaching the setTimeout(), catch() outputs 'Error: Cannot sum an empty array first'.
+Still in the event thread is sum2DArray(array2D) which has setTimeout() on the event thread and so the 'Adding i,j to sum' loop is still going.
+Finally when the setTimeout() is ended the then() block prints the response of sumPromise1: 45.
